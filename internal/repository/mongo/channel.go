@@ -48,8 +48,10 @@ func (obj *channelRepository) StoreNewAction(ctx context.Context, channel *domai
 	var upsert bson.M
 	if switchType {
 		upsert = bson.M{
+			"$set": bson.M{
+				"serverId": channel.ServerId,
+			},
 			"$addToSet": bson.M{
-				"serverId":    channel.ServerId,
 				"actionFlags": action,
 			},
 		}
