@@ -23,10 +23,7 @@ type (
 var config *Config
 
 func InitConfig() (*Config, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, err
-	}
+	_ = godotenv.Load()
 
 	var cfg Config
 	if err := env.Parse(&cfg); err != nil {
