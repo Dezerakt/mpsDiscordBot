@@ -1,0 +1,40 @@
+services:
+  app:
+    container_name: bot_app
+    platform: linux/amd64
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    working_dir: /app
+    volumes:
+      - .:/app
+    networks:
+      app_network:
+        aliases:
+          - app.lvh.me
+
+  mongo:
+    container_name: bot_mongo
+    image: mongo:8.0.14
+    ports:
+      - "27017:27017"
+    volumes:
+      - db_data:/var/lib/mongo/data
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    networks:
+      app_network:
+        aliases:
+          - mongo.lvh.me
+
+
+
+networks:
+  app_network:
+    external: false
+
+volumes:
+  db_data:
