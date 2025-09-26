@@ -1,25 +1,22 @@
-# Step 1: Modules caching + Air install
-FROM golang:1.24.5-alpine3.21 as modules
-
-WORKDIR /modules
-COPY go.mod go.sum ./
-RUN go mod download && \
-    go install github.com/air-verse/air@v1.61.7
-
-# Step 2: Builder
-FROM golang:1.24.5-alpine3.21 as builder
+# dev stage
+FROM golang:1.24.5-alpine3.21 as dev
 
 WORKDIR /app
-COPY --from=modules /go/bin/air /usr/local/bin/air
+RUN go install github.com/air-verse/air@v1.61.7
+COPY go.mod go.sum ./
+RUN go mod download
 COPY . .
+CMD ["air"]
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go build -o /bin/app ./
+# prod stage
+FROM golang:1.24.5-alpine3.21 as builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /bin/app ./
 
-# Step 3: Final runtime image
-FROM cosmtrek/air:v1.61.7
-
-COPY --from=builder /app/config /config
+FROM alpine:3.21 as prod
 COPY --from=builder /bin/app /bin/app
-
+COPY --from=builder /app/config /config
 CMD ["/bin/app"]
