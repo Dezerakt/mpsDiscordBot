@@ -28,6 +28,10 @@ func (obj *Handler) RegisterNewActions(s *discordgo.Session, m *discordgo.Messag
 		return
 	}
 
+	if m.Content[0] == '~' {
+		return
+	}
+
 	isUserAdmin, err := actions.IsAuthorAdmin(s, m)
 	if err != nil {
 		log.Println(err)

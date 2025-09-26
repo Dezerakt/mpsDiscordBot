@@ -42,13 +42,14 @@ func (obj *channelRepository) GetChannelInfo(ctx context.Context, channelId stri
 	return &channel, nil
 }
 
-func (obj *channelRepository) StoreNewAction(ctx context.Context, channelId string, action vo.ActionFlag, switchType bool) (err error) {
-	filter := bson.M{"channelId": channelId}
+func (obj *channelRepository) StoreNewAction(ctx context.Context, channel *domain.Channel, action vo.ActionFlag, switchType bool) (err error) {
+	filter := bson.M{"channelId": channel.ChannelId}
 
 	var upsert bson.M
 	if switchType {
 		upsert = bson.M{
 			"$addToSet": bson.M{
+				"serverId":    channel.ServerId,
 				"actionFlags": action,
 			},
 		}
@@ -59,9 +60,8 @@ func (obj *channelRepository) StoreNewAction(ctx context.Context, channelId stri
 			},
 		}
 	}
-	option := options.UpdateOne().SetUpsert(true)
 
-	log.Println(channelId)
+	option := options.UpdateOne().SetUpsert(true)
 
 	updateResult, err := obj.channelCollection.UpdateOne(ctx, filter, upsert, option)
 	if err != nil {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
+	"mpsDiscordBot/internal/domain"
 	"mpsDiscordBot/internal/repository"
 	"mpsDiscordBot/vo"
 	"strings"
@@ -51,8 +51,11 @@ func HandleChannel(ctx context.Context, channelRepo repository.IChannel, s *disc
 	var err error
 	switch action {
 	case "threaded":
-		log.Println("threaded")
-		err = channelRepo.StoreNewAction(ctx, formattedChannelId, vo.ThreadCreate, switchType)
+		err = channelRepo.StoreNewAction(ctx, &domain.Channel{
+			ChannelId: formattedChannelId,
+			ServerId:  m.GuildID,
+		}, vo.ThreadCreate, switchType)
+		s.ChannelMessageSend(m.ChannelID, "Successfully stored threaded action")
 	}
 	if err != nil {
 		return err

@@ -9,6 +9,6 @@ import (
 type (
 	IChannel interface {
 		GetChannelInfo(ctx context.Context, channelId string) (*domain.Channel, error)
-		StoreNewAction(ctx context.Context, channelId string, action vo.ActionFlag, switchType bool) error
+		StoreNewAction(ctx context.Context, channel *domain.Channel, action vo.ActionFlag, switchType bool) error
 	}
 )
