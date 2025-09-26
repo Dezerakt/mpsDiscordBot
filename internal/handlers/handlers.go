@@ -28,7 +28,7 @@ func (obj *Handler) RegisterNewActions(s *discordgo.Session, m *discordgo.Messag
 		return
 	}
 
-	if m.Content[0] == '~' {
+	if m.Content[0] != '~' {
 		return
 	}
 
@@ -39,7 +39,7 @@ func (obj *Handler) RegisterNewActions(s *discordgo.Session, m *discordgo.Messag
 		return
 	}
 
-	if !isUserAdmin {
+	if !isUserAdmin && m.Content[0] == '~' {
 		s.ChannelMessageSend(m.ChannelID, ")")
 		return
 	}
